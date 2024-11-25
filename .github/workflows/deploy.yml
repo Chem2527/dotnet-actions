@@ -1,0 +1,55 @@
+name: Deploy ASP.NET Core to Windows EC2
+
+on:
+  push:
+    branches:
+      - main  # Trigger deployment only on pushes to the main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up .NET SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'  # Adjusted for .NET 9.0.x
+
+      # Step 3: Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore MyAspNetCoreApp.csproj
+
+      # Step 4: Build the project
+      - name: Build the project
+        run: dotnet build MyAspNetCoreApp.csproj --configuration Release --no-restore
+
+      # Step 5: Publish the project
+      - name: Publish the project
+        run: dotnet publish MyAspNetCoreApp.csproj --configuration Release --output ./publish --no-build
+
+      # Step 6: Transfer build artifacts to EC2 instance
+      - name: Deploy artifacts to EC2
+        uses: appleboy/scp-action@v0.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}       # EC2 public IP or hostname
+          username: ${{ secrets.EC2_USER }}   # Username for EC2 login
+          key: ${{ secrets.EC2_SSH_KEY }}     # SSH private key stored in GitHub Secrets
+          source: ./publish/
+          target: C:\inetpub\wwwroot\myapp\   # Path on the Windows EC2 instance
+
+      # Step 7: Restart IIS on EC2
+      - name: Restart IIS
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            Import-Module WebAdministration
+            Restart-WebAppPool -Name "DefaultAppPool"
+            Write-Host "IIS restarted successfully."
