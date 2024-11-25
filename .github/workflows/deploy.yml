@@ -49,8 +49,9 @@ jobs:
           host: ${{ secrets.EC2_HOST }}         # EC2 public IP or hostname
           username: ${{ secrets.EC2_USER }}     # Username for EC2 login
           key: ${{ secrets.EC2_SSH_KEY }}       # SSH private key stored in GitHub Secrets
+          port: 22                              # SSH port (default 22)
           script: |
-            Write-Host "Attempting to restart IIS..."
-            powershell.exe Import-Module WebAdministration
-            powershell.exe Restart-WebAppPool -Name "DefaultAppPool"
-            Write-Host "IIS restarted successfully."
+            powershell.exe -Command "Write-Host 'Attempting to restart IIS...'; \
+            Import-Module WebAdministration; \
+            Restart-WebAppPool -Name 'DefaultAppPool'; \
+            Write-Host 'IIS restarted successfully.'"
