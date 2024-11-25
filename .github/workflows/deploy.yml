@@ -52,8 +52,4 @@ jobs:
           port: 22                              # SSH port (default 22)
           script: |
             powershell.exe -Command "Write-Host 'Attempting to restart IIS...'; Import-Module WebAdministration; Restart-WebAppPool -Name 'DefaultAppPool'; Write-Host 'IIS restarted successfully.'"
-          
-      # Step 8: Optionally, verify that the app is running on EC2 (e.g., by checking if the web app responds)
-      - name: Verify Deployment
-        run: |
-          curl http://${{ secrets.EC2_HOST }}/myapp
+    
