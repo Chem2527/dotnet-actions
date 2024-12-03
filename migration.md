@@ -8,8 +8,9 @@ gh extension install github/gh-actions-importer
 ```
 
 3. Verify GitHub CLI Installation
-
+```bash
 gh --version
+```
 4. Authenticate with GitHub
 ```basg
 gh auth login
