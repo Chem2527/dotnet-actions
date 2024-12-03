@@ -1,4 +1,5 @@
 Migration Workflow: Bitbucket to GitHub Actions using GitHub CLI
+Pre-requisite: install github cli, docker desktop
 1. Install GitHub CLI (if not already installed)
 Download and install the GitHub CLI for your platform from GitHub CLI Documentation.
 
